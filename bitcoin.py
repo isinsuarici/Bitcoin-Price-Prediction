@@ -2,9 +2,9 @@
 """
 Created on Mon Nov 29 10:44:01 2021
 
-@author: casper
+@author: isinsu
 """
-#1.kutuphaneler
+#1.libraries
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -19,23 +19,23 @@ from sklearn.tree import DecisionTreeRegressor
 
 
 
-# veri yukleme
+# data
 veriler = pd.read_csv('BTCUSDT.csv')
 
 #veriler.tail()
 
 
-#eksik verilerin ortalama ile doldurulması
+#filling in missing data with the mean
 
 imputer=SimpleImputer(missing_values=np.nan , strategy="mean")
 eksikveriler= veriler.iloc[:,3:10].values
 print(eksikveriler)
-imputer =imputer.fit(eksikveriler[:,3:10])   # makine öğrenmesinin öğrenildiği(eksik değerlerin yerine ne koyacağını öğreniyor)
-eksikveriler[:,3:10] =imputer.transform(eksikveriler[:,3:10])   #öğrenilenlerin uygulandığı kısım(eksik değerlerin yerine koyacağı değeri koyuyor)
+imputer =imputer.fit(eksikveriler[:,3:10])   #learning (learning what to replace missing values)
+eksikveriler[:,3:10] =imputer.transform(eksikveriler[:,3:10])   #the part where the learned is applied (it replaces the missing values with the value)
 print(eksikveriler)
 
-#verilerin birleştirilmesi ve dataframe oluşturulması(numpy dizileri dataframe dönüşümü)
-#date'i aldık
+#merging data and creating a dataframe (numpy arrays dataframe conversion)
+#we got the date
 
 date=veriler.iloc[:,1]
 sonuc3=pd.DataFrame(data=date ,index=range(1567), columns= ['date'])
@@ -49,7 +49,7 @@ sonuc2=pd.DataFrame(data=eksikveriler ,index=range(1567),
 sonuc2.drop("close",axis=1,inplace=True)
 print(sonuc2)
 
-#dataframe birleştirme işlemi
+#dataframe merge operation
 s=pd.concat([sonuc3,sonuc2],axis=1)
 print(s)
 
@@ -109,7 +109,7 @@ print('*************************************')
 
 
 # Create a selector object that will use the random forest classifier to identify
-# features that have an importance of more than 0.05
+# features that have an importance of more than 0.3
 sfm = SelectFromModel(rf_reg, threshold=0.3)
 
 # Train the selector
@@ -125,7 +125,7 @@ X_important_test = sfm.transform(x_test)
 rfc_important=RandomForestRegressor(n_estimators = 10,random_state=0)
 rfc_important.fit(X_important_train,y_train.ravel())
 
-#yeni featurlarla tahmin işlemi
+# guessing with new features
 y_important_pred = rfc_important.predict(X_important_test)
 
 
